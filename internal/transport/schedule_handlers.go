@@ -10,6 +10,7 @@ import (
 // @Tags schedule
 // @Description get all inbound flights
 // @ID get-inbound-flights
+// @Param airport path string true "Airport"
 // @Produce  json
 // @Success 200 {integer} integer 1
 // @Failure 400,404 {object} transort_error
@@ -34,6 +35,7 @@ func (h *Handler) InboundSchedule(c *gin.Context) {
 // @Summary Get outbound flights by airport
 // @Tags schedule
 // @Description get all outbound flights
+// @Param airport path string true "Airport"
 // @ID get-outbound-flights
 // @Produce  json
 // @Success 200 {integer} integer 1

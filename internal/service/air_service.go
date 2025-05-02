@@ -19,6 +19,10 @@ func (a *AirService) GetAllCities() (repository.Cities, error) {
 	return a.airRepo.GetAllSrcAndDestCities()
 }
 
+func (a *AirService) IsOriginExists(origin string) bool {
+	return a.airRepo.IsOriginExists(origin)
+}
+
 func (a *AirService) GetAllAirports() (repository.Airports, error) {
 	return a.airRepo.GetAllSrcAndDestAirports()
 }

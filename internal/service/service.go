@@ -1,6 +1,7 @@
 package service
 
 import (
+	"flyAPI/internal/dto/request"
 	"flyAPI/internal/models"
 	"flyAPI/internal/repository"
 )
@@ -9,6 +10,7 @@ type IAirService interface {
 	GetAllCities() (repository.Cities, error)
 	GetAllAirports() (repository.Airports, error)
 	GetAirportsByCity(cityName string) ([]models.Airport, error)
+	IsOriginExists(origin string) bool
 }
 
 type IScheduleService interface {
@@ -16,19 +18,20 @@ type IScheduleService interface {
 	GetOutboundSchedule(airport string) ([]repository.OutboundSchedule, error)
 }
 
-type IRouteRepository interface {
+type IRouteService interface {
+	GetRoutes(cfg request.FlightParams) ([][]models.Flight, error)
 }
 
 type Service struct {
 	IAirService
 	IScheduleService
-	IRouteRepository
+	IRouteService
 }
 
 func NewService(repos *repository.Respository) *Service {
 	return &Service{
 		IAirService:      NewAirService(repos.IAirRepository),
 		IScheduleService: NewScheduleService(repos.IScheduleRepository),
-		IRouteRepository: NewRouteService(repos.IRouteRepository, repos.IAirRepository),
+		IRouteService:    NewRouteService(repos.IRouteRepository, repos.IAirRepository),
 	}
 }

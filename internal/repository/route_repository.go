@@ -26,11 +26,11 @@ type RouteParams struct {
 	Date             time.Time
 }
 
-func (s *RouteRepo) GetRoutesFromAirport(aiport string) ([]models.Flight, error) {
+func (s *RouteRepo) GetRoutesFromAirport(aiport, startDate, endDate string) ([]models.Flight, error) {
 	var flights []models.Flight
-	query := fmt.Sprintf(`SELECT * from %s v WHERE v.departure_aiport = $1`, flightsTable)
+	query := fmt.Sprintf(`SELECT DISTINCT * from %s v WHERE v.departure_airport = $1 AND v.status = 'Scheduled' AND scheduled_departure > $2`, flightsTable)
 
-	if err := s.db.Select(&flights, query, aiport); err != nil {
+	if err := s.db.Select(&flights, query, aiport, startDate); err != nil {
 		return []models.Flight{}, err
 	}
 

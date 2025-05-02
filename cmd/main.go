@@ -11,6 +11,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	_ "flyAPI/docs"
+
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

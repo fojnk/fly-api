@@ -40,7 +40,7 @@ func (h *Handler) AllCities(c *gin.Context) {
 // @Failure 400,404 {object} transort_error
 // @Failure 500 {object} transort_error
 // @Failure default {object} transort_error
-// @Router /api/aiports [get]
+// @Router /api/airports [get]
 func (h *Handler) AllAirports(c *gin.Context) {
 	airports, err := h.services.IAirService.GetAllAirports()
 

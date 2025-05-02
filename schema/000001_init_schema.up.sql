@@ -1,3 +1,11 @@
+CREATE OR REPLACE FUNCTION public.hashpoint(point) RETURNS integer
+   LANGUAGE sql IMMUTABLE
+   AS 'SELECT hashfloat8($1[0]) # hashfloat8($1[1])';
+
+CREATE OPERATOR CLASS public.point_hash_ops DEFAULT FOR TYPE point USING hash AS
+   OPERATOR 1 ~=(point,point),
+   FUNCTION 1 public.hashpoint(point);
+
 CREATE TABLE pricing_rules (
   flight_id INTEGER NOT NULL,
   fare_conditions VARCHAR(10) NOT NULL,
@@ -7,14 +15,13 @@ CREATE TABLE pricing_rules (
   rule_description TEXT
 );
 
-INSERT INTO pricing_rules (flight_id, fare_conditions, min_price, max_price, avg_price, rule_description)
+INSERT INTO pricing_rules (flight_id, fare_conditions, min_price, max_price, avg_price)
 SELECT
   f.flight_id,
   tf.fare_conditions,
   MIN(tf.amount) AS min_price,
   MAX(tf.amount) AS max_price,
   AVG(tf.amount) AS avg_price,
-  'Standard pricing rule based on historical data' AS rule_description
 FROM
   flights f
 JOIN

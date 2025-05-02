@@ -1,0 +1,238 @@
+basePath: /
+definitions:
+  transport.transort_error:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: flyAPI
+  version: "1.0"
+paths:
+  /api/airports:
+    get:
+      description: get all aiports
+      operationId: get-aiports
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get all airports
+      tags:
+      - aiports
+  /api/airports/{city}:
+    get:
+      consumes:
+      - application/json
+      description: Get aiports by city
+      operationId: get-airports-by-city
+      parameters:
+      - description: City
+        in: path
+        name: city
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get Aiports by city
+      tags:
+      - aiports
+  /api/cities:
+    get:
+      description: get all cities
+      operationId: get-cities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get all cities
+      tags:
+      - cities
+  /api/inbound-schedule/{airport}:
+    get:
+      description: get all inbound flights
+      operationId: get-inbound-flights
+      parameters:
+      - description: Airport
+        in: path
+        name: airport
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get inbound flights by airport
+      tags:
+      - schedule
+  /api/outbound-schedule/{airport}:
+    get:
+      description: get all outbound flights
+      operationId: get-outbound-flights
+      parameters:
+      - description: Airport
+        in: path
+        name: airport
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get outbound flights by airport
+      tags:
+      - schedule
+  /api/routes:
+    get:
+      description: get all routes
+      operationId: get-routes
+      parameters:
+      - description: Departure airport/city
+        in: query
+        name: src
+        required: true
+        type: string
+      - description: Arrival airport/city
+        in: query
+        name: dest
+        required: true
+        type: string
+      - description: Date for start searching
+        in: query
+        name: date
+        type: string
+      - description: Flight limit
+        in: query
+        name: limit
+        type: integer
+      - description: Fare conditions
+        in: query
+        name: conditions
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Get all routes by params
+      tags:
+      - routes
+swagger: "2.0"
