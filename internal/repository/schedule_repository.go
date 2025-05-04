@@ -23,7 +23,7 @@ type InboundSchedule struct {
 	Origin    string  `db:"origin" json:"origin"`
 }
 
-func (s *ScheduleRepo) GetInboundScheduleForAirport(airport string) ([]InboundSchedule, error) {
+func (s *ScheduleRepo) GetInboundScheduleForAirport(airport, time string) ([]InboundSchedule, error) {
 	var schedules []InboundSchedule
 
 	query := fmt.Sprintf(`
@@ -36,12 +36,12 @@ func (s *ScheduleRepo) GetInboundScheduleForAirport(airport string) ([]InboundSc
 		%s f
 	WHERE
 		f.arrival_airport = $1
-		AND f.scheduled_arrival >= CURRENT_DATE
+		AND f.scheduled_arrival >= $2
 	ORDER BY
 		f.scheduled_arrival;
 	`, flightsTable)
 
-	if err := s.db.Select(&schedules, query, airport); err != nil {
+	if err := s.db.Select(&schedules, query, airport, time); err != nil {
 		return nil, err
 	}
 
@@ -49,13 +49,13 @@ func (s *ScheduleRepo) GetInboundScheduleForAirport(airport string) ([]InboundSc
 }
 
 type OutboundSchedule struct {
-	DayOfWeek int    `db:"day_of_week" json:"day_of_week"`
-	Time      string `db:"time_of_departure" json:"time_of_departure"`
-	FlightNo  int    `db:"flight_no" json:"flight_no"`
-	Origin    string `db:"destination" json:"destination"`
+	DayOfWeek int     `db:"day_of_week" json:"day_of_week"`
+	Time      string  `db:"time_of_departure" json:"time_of_departure"`
+	FlightNo  []uint8 `db:"flight_no" json:"flight_no"`
+	Origin    string  `db:"destination" json:"destination"`
 }
 
-func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string) ([]OutboundSchedule, error) {
+func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string, time string) ([]OutboundSchedule, error) {
 	var schedules []OutboundSchedule
 
 	query := fmt.Sprintf(`
@@ -68,12 +68,12 @@ func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string) ([]Outbound
             %s f
         WHERE
             f.departure_airport = $1
-            AND f.scheduled_departure >= CURRENT_DATE
+            AND f.scheduled_departure >= $2
         ORDER BY
             f.scheduled_departure;
 	`, flightsTable)
 
-	if err := s.db.Select(&schedules, query, airport); err != nil {
+	if err := s.db.Select(&schedules, query, airport, time); err != nil {
 		return nil, err
 	}
 

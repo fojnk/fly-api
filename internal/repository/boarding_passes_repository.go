@@ -25,6 +25,14 @@ func (p *BoardingPassesRepo) FindLastBoardingNo(flightId int) (int, error) {
 	return boardingNo, err
 }
 
+func (p *BoardingPassesRepo) FindBoardingPassesByFlightAndFareCondition(flightId int, fareCondition string) ([]models.BoardingPass, error) {
+	var boardingPasses []models.BoardingPass
+
+	query := fmt.Sprintf(`SELECT * FROM %s b WHERE b.flight_id = $1 AND b.fare_condition = $2`, BoardingPassesTable)
+	err := p.db.Select(&boardingPasses, query, flightId, fareCondition)
+	return boardingPasses, err
+}
+
 func (p *BoardingPassesRepo) AddBoardingPass(newBoardingPass models.BoardingPass) error {
 	query := fmt.Sprintf(`INSERT INTO %s (ticket_no, seat_no, boarding_no, flight_id) VALUES ($1, $2, $3)`, BoardingPassesTable)
 

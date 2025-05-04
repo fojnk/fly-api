@@ -2,6 +2,7 @@ package transport
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +21,9 @@ import (
 func (h *Handler) InboundSchedule(c *gin.Context) {
 	airport := c.Param("airport")
 
-	schedule, err := h.services.IScheduleService.GetInboundSchedule(airport)
+	currTime := time.Now().AddDate(-8, 4, 0)
+
+	schedule, err := h.services.IScheduleService.GetInboundSchedule(airport, currTime.Format(time.RFC3339))
 
 	if err != nil {
 		NewTransportErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -46,7 +49,9 @@ func (h *Handler) InboundSchedule(c *gin.Context) {
 func (h *Handler) OutboundSchedule(c *gin.Context) {
 	airport := c.Param("airport")
 
-	schedule, err := h.services.IScheduleService.GetOutboundSchedule(airport)
+	currTime := time.Now().AddDate(-8, 4, 0)
+
+	schedule, err := h.services.IScheduleService.GetOutboundSchedule(airport, currTime.Format(time.RFC3339))
 
 	if err != nil {
 		NewTransportErrorResponse(c, http.StatusInternalServerError, err.Error())

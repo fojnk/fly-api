@@ -42,12 +42,13 @@ func NewBookingService(
 }
 
 func (b *BookingService) CheckIn(data request.CheckInRequest) error {
-	_, err := b.ticketRepo.FindTicketByTicketNo(data.TicketNo)
+	ticketFlight, err := b.ticketFlightsRepo.FindTicketFlight(data.TicketNo)
 	if err != nil {
 		return err
 	}
 
-	if _, err = b.flightRepo.GetFlightByFlightId(int(data.FlightId)); err != nil {
+	flight, err := b.flightRepo.GetFlightByFlightId(int(data.FlightId))
+	if err != nil {
 		return err
 	}
 
@@ -61,11 +62,16 @@ func (b *BookingService) CheckIn(data request.CheckInRequest) error {
 	}
 	lastNo += 1
 
+	seatNo, err := b.getFirstSeatByFlightAndFareCondition(flight.AircraftCode, int(data.FlightId), ticketFlight.FareConditions)
+	if err != nil {
+		return err
+	}
+
 	newBoardingPass := models.BoardingPass{
 		BoardingNo: int64(lastNo),
 		FlightId:   data.FlightId,
 		TicketNo:   data.TicketNo,
-		SeatNo:     "10b",
+		SeatNo:     seatNo,
 	}
 
 	err = b.boardingPassRepo.AddBoardingPass(newBoardingPass)
@@ -101,7 +107,7 @@ func (b *BookingService) BookOneRace(data request.BookingOneRaceRequest) (respon
 		return response.BookingResponse{}, errors.New("flight already finished")
 	}
 
-	seat, err := b.seatRepo.FindSeatsByAircraftCodeAndFareCondition(currFlight.AircraftCode, data.FareCondition)
+	seat, err := b.seatRepo.FindSeatAmountByAircraftCodeAndFareCondition(currFlight.AircraftCode, data.FareCondition)
 	if err != nil || seat.Amount > 0 {
 		return response.BookingResponse{}, errors.New("seats not found")
 	}
@@ -195,4 +201,26 @@ func (b *BookingService) generateUniqueTicketNo() string {
 		}
 	}
 	return ticketNo
+}
+
+func (b *BookingService) getFirstSeatByFlightAndFareCondition(aircraftCode string, flightId int, fareCondition string) (string, error) {
+	availableSeats, err := b.seatRepo.FindSeatsByAircraftCodeAndFareCondition(aircraftCode, fareCondition)
+	if err != nil {
+		return "", err
+	}
+
+	blockedSeats, err := b.boardingPassRepo.FindBoardingPassesByFlightAndFareCondition(flightId, fareCondition)
+	save := make(map[string]bool)
+	for _, seat := range blockedSeats {
+		save[seat.SeatNo] = true
+	}
+
+	for _, seat := range availableSeats {
+		_, ok := save[seat.SeatNo]
+		if !ok {
+			return seat.SeatNo, nil
+		}
+	}
+
+	return "", errors.New("all seats blocked")
 }

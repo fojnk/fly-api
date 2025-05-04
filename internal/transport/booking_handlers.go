@@ -13,12 +13,12 @@ import (
 // @ID create-booking
 // @Accept json
 // @Produce  json
-// @Param input body requst.BookingRaceRequest true "Book data"
+// @Param input body request.BookingRaceRequest true "Book data"
 // @Success 200 {integer} integer 1
 // @Failure 400,404 {object} transort_error
 // @Failure 500 {object} transort_error
 // @Failure default {object} transort_error
-// @Router /api/routes [post]
+// @Router /api/book [post]
 func (h *Handler) Book(c *gin.Context) {
 	var input request.BookingRaceRequest
 
@@ -44,7 +44,7 @@ func (h *Handler) Book(c *gin.Context) {
 // @ID check-jn
 // @Accept json
 // @Produce  json
-// @Param input body requst.CheckInRequest true "CheckIn data"
+// @Param input body request.CheckInRequest true "CheckIn data"
 // @Success 200 {integer} integer 1
 // @Failure 400,404 {object} transort_error
 // @Failure 500 {object} transort_error

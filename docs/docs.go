@@ -117,6 +117,124 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/book": {
+            "post": {
+                "description": "create booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Create booking",
+                "operationId": "create-booking",
+                "parameters": [
+                    {
+                        "description": "Book data",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.BookingRaceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/check-in": {
+            "post": {
+                "description": "check in",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "CheckIn",
+                "operationId": "check-jn",
+                "parameters": [
+                    {
+                        "description": "CheckIn data",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CheckInRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/transport.transort_error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/cities": {
             "get": {
                 "description": "get all cities",
@@ -352,6 +470,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "request.BookingRaceRequest": {
+            "type": "object",
+            "properties": {
+                "fare_condition": {
+                    "type": "string"
+                },
+                "flight_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "passenger_contact": {
+                    "type": "string"
+                },
+                "passenger_id": {
+                    "type": "string"
+                },
+                "passenger_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CheckInRequest": {
+            "type": "object",
+            "properties": {
+                "flight_id": {
+                    "type": "integer"
+                },
+                "ticket_no": {
+                    "type": "string"
+                }
+            }
+        },
         "transport.transort_error": {
             "type": "object",
             "properties": {

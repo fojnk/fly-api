@@ -1,5 +1,27 @@
 basePath: /
 definitions:
+  request.BookingRaceRequest:
+    properties:
+      fare_condition:
+        type: string
+      flight_ids:
+        items:
+          type: integer
+        type: array
+      passenger_contact:
+        type: string
+      passenger_id:
+        type: string
+      passenger_name:
+        type: string
+    type: object
+  request.CheckInRequest:
+    properties:
+      flight_id:
+        type: integer
+      ticket_no:
+        type: string
+    type: object
   transport.transort_error:
     properties:
       message:
@@ -79,6 +101,84 @@ paths:
       summary: Get Aiports by city
       tags:
       - aiports
+  /api/book:
+    post:
+      consumes:
+      - application/json
+      description: create booking
+      operationId: create-booking
+      parameters:
+      - description: Book data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.BookingRaceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: Create booking
+      tags:
+      - Booking
+  /api/check-in:
+    post:
+      consumes:
+      - application/json
+      description: check in
+      operationId: check-jn
+      parameters:
+      - description: CheckIn data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/request.CheckInRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/transport.transort_error'
+      summary: CheckIn
+      tags:
+      - Booking
   /api/cities:
     get:
       description: get all cities

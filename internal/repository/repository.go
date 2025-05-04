@@ -26,8 +26,8 @@ type IAirRepository interface {
 }
 
 type IScheduleRepository interface {
-	GetInboundScheduleForAirport(airport string) ([]InboundSchedule, error)
-	GetOutboundScheduleForAirport(airport string) ([]OutboundSchedule, error)
+	GetInboundScheduleForAirport(airport string, time string) ([]InboundSchedule, error)
+	GetOutboundScheduleForAirport(airport string, time string) ([]OutboundSchedule, error)
 }
 
 type IRouteRepository interface {
@@ -36,7 +36,8 @@ type IRouteRepository interface {
 
 type ISeatRepository interface {
 	GetSeatsByAircraftCode(aircraftCode string) (models.AircraftSeatsInfo, error)
-	FindSeatsByAircraftCodeAndFareCondition(aircraftCode, fareConditions string) (models.AircraftSeatsByFareCondition, error)
+	FindSeatsByAircraftCodeAndFareCondition(aircraftCode, fareConditions string) ([]models.Seat, error)
+	FindSeatAmountByAircraftCodeAndFareCondition(aircraftCode, fareConditions string) (models.AircraftSeatsByFareCondition, error)
 }
 
 type ITicketRepository interface {
@@ -48,6 +49,7 @@ type ITicketRepository interface {
 type ITicketFlightsRepository interface {
 	GetAllSoldSeatsByFlightAndAircraftCode(flightId, aircraftCode string) (models.FlightSeatInfo, error)
 	AddTicketFlight(newTicketFlight models.TicketFlights) error
+	FindTicketFlight(ticketNo string) (models.TicketFlights, error)
 }
 
 type IFlightRepository interface {
@@ -63,6 +65,7 @@ type IBoardingPassRepo interface {
 	FindLastBoardingNo(flightId int) (int, error)
 	AddBoardingPass(newBoardingPass models.BoardingPass) error
 	ExistsByFlightIdAndTicketNo(flightId int, ticketNo string) (int, error)
+	FindBoardingPassesByFlightAndFareCondition(flightId int, fareCondition string) ([]models.BoardingPass, error)
 }
 
 type Respository struct {

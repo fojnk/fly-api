@@ -39,3 +39,11 @@ func (t *TicketFlightsRepo) AddTicketFlight(newTicketFlight models.TicketFlights
 	_, err := t.db.Exec(query, newTicketFlight.TicketNo, newTicketFlight.FlightId, newTicketFlight.FareConditions, newTicketFlight.Amount)
 	return err
 }
+
+func (t *TicketFlightsRepo) FindTicketFlight(ticketNo string) (models.TicketFlights, error) {
+	var ticket models.TicketFlights
+
+	query := fmt.Sprintf(`SELECT * from %s t WHERE t.ticket_no = $1 LIMIT 1`, ticketFlightsTable)
+	err := t.db.Get(&ticket, query, ticketNo)
+	return ticket, err
+}

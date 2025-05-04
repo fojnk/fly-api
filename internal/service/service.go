@@ -15,8 +15,8 @@ type IAirService interface {
 }
 
 type IScheduleService interface {
-	GetInboundSchedule(airport string) ([]repository.InboundSchedule, error)
-	GetOutboundSchedule(airport string) ([]repository.OutboundSchedule, error)
+	GetInboundSchedule(airport string, time string) ([]repository.InboundSchedule, error)
+	GetOutboundSchedule(airport string, time string) ([]repository.OutboundSchedule, error)
 }
 
 type IRouteService interface {
