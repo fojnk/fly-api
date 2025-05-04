@@ -17,17 +17,20 @@ func NewTicketFlightsRepo(db *sqlx.DB) *TicketFlightsRepo {
 	}
 }
 
-func (t *TicketFlightsRepo) GetAllSoldSeatsByFlightAndAircraftCode(flightId, aircraftCode string) (models.FlightSeatInfo, error) {
+func (t *TicketFlightsRepo) GetAllSoldSeatsByFlightAndAircraftCode(flightId int, aircraftCode string) (models.FlightSeatInfo, error) {
 	var info models.FlightSeatInfo
 
-	query := fmt.Sprintf(`SELECT "tf.flight_id, tf.aircraft_code,
-            SUM(CASE WHEN tf.fare_condition = 'Economy' THEN 1 ELSE 0 END) as economy_amount,
-            SUM (CASE WHEN tf.fare_condition = 'Economy' THEN tf.amount ELSE null END) as economy_total_price,
-            SUM(CASE WHEN tf.fare_condition = 'Business' THEN 1 ELSE 0 END) as business_amount,
-            SUM (CASE WHEN tf.fare_condition = 'Business' THEN tf.amount ELSE null END) as business_total_price, 
-            SUM(CASE WHEN tf.fare_condition = 'Comfort' THEN 1 ELSE 0 END) as comfort_amount, 
-            SUM (CASE WHEN tf.fare_condition = 'Comfort' THEN tf.amount ELSE null END) as comport_total_price
-            FROM %s tf WHERE tf.flight_id = $1 AND tf.aircraft_code = $2`, ticketFlightsTable)
+	query := fmt.Sprintf(`SELECT tf.flight_id, f.aircraft_code,
+        SUM(CASE WHEN tf.fare_conditions = 'Economy' THEN 1 ELSE 0 END) as economy_amount,
+        SUM(CASE WHEN tf.fare_conditions = 'Economy' THEN tf.amount ELSE 0 END) as economy_total_price,
+        SUM(CASE WHEN tf.fare_conditions = 'Business' THEN 1 ELSE 0 END) as business_amount,
+        SUM(CASE WHEN tf.fare_conditions = 'Business' THEN tf.amount ELSE 0 END) as business_total_price,
+        SUM(CASE WHEN tf.fare_conditions = 'Comfort' THEN 1 ELSE 0 END) as comfort_amount,
+        SUM(CASE WHEN tf.fare_conditions = 'Comfort' THEN tf.amount ELSE 0 END) as comfort_total_price
+    FROM %s tf
+    LEFT JOIN %s f ON f.flight_id = tf.flight_id
+    WHERE tf.flight_id = $1 AND f.aircraft_code = $2
+    GROUP BY tf.flight_id, f.aircraft_code`, ticketFlightsTable, flightsTable)
 
 	err := t.db.Get(&info, query, flightId, aircraftCode)
 	return info, err

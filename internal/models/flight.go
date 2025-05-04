@@ -16,12 +16,12 @@ type Flight struct {
 }
 
 type FlightSeatInfo struct {
-	FlightNo           string
-	AircraftCode       string
-	EconomyAmount      int
-	EconomyTotalPrice  int
-	ComfortAmount      int
-	ComfortTotalPrice  int
-	BusinessAmount     int
-	BusinessTotalPrice int
+	FlightId           int     `db:"flight_id"`
+	AircraftCode       string  `db:"aircraft_code"`
+	EconomyAmount      int     `db:"economy_amount"`
+	EconomyTotalPrice  float64 `db:"economy_total_price"`
+	ComfortAmount      int     `db:"comfort_amount"`
+	ComfortTotalPrice  float64 `db:"comfort_total_price"`
+	BusinessAmount     int     `db:"business_amount"`
+	BusinessTotalPrice float64 `db:"business_total_price"`
 }

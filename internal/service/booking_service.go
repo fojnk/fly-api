@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"flyAPI/internal/dto/request"
 	"flyAPI/internal/dto/response"
@@ -9,6 +10,8 @@ import (
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 type BookingService struct {
@@ -44,12 +47,12 @@ func NewBookingService(
 func (b *BookingService) CheckIn(data request.CheckInRequest) error {
 	ticketFlight, err := b.ticketFlightsRepo.FindTicketFlight(data.TicketNo)
 	if err != nil {
-		return err
+		return errors.New("failed on getting ticket flight:" + err.Error())
 	}
 
 	flight, err := b.flightRepo.GetFlightByFlightId(int(data.FlightId))
 	if err != nil {
-		return err
+		return errors.New("failed on getting flight:" + err.Error())
 	}
 
 	if _, err = b.boardingPassRepo.ExistsByFlightIdAndTicketNo(int(data.FlightId), data.TicketNo); err == nil {
@@ -64,7 +67,7 @@ func (b *BookingService) CheckIn(data request.CheckInRequest) error {
 
 	seatNo, err := b.getFirstSeatByFlightAndFareCondition(flight.AircraftCode, int(data.FlightId), ticketFlight.FareConditions)
 	if err != nil {
-		return err
+		return errors.New("failed on getting seat:" + err.Error())
 	}
 
 	newBoardingPass := models.BoardingPass{
@@ -79,7 +82,7 @@ func (b *BookingService) CheckIn(data request.CheckInRequest) error {
 }
 
 func (b *BookingService) CreateBooking(data request.BookingRaceRequest) ([]response.BookingResponse, error) {
-	responses := make([]response.BookingResponse, len(data.FlightsIds))
+	responses := make([]response.BookingResponse, len(data.FlightsIds)-1)
 	for _, flightId := range data.FlightsIds {
 		response, err := b.BookOneRace(request.BookingOneRaceRequest{
 			FlightId:         flightId,
@@ -107,14 +110,14 @@ func (b *BookingService) BookOneRace(data request.BookingOneRaceRequest) (respon
 		return response.BookingResponse{}, errors.New("flight already finished")
 	}
 
-	seat, err := b.seatRepo.FindSeatAmountByAircraftCodeAndFareCondition(currFlight.AircraftCode, data.FareCondition)
-	if err != nil || seat.Amount > 0 {
-		return response.BookingResponse{}, errors.New("seats not found")
+	seat, err := b.seatRepo.FindSeatsByAircraftCodeAndFareCondition(currFlight.AircraftCode, data.FareCondition)
+	if err != nil || len(seat) == 0 {
+		return response.BookingResponse{}, errors.New("seats not found: " + err.Error())
 	}
 
-	info, err := b.ticketFlightsRepo.GetAllSoldSeatsByFlightAndAircraftCode(currFlight.FlightNo, currFlight.AircraftCode)
+	info, err := b.ticketFlightsRepo.GetAllSoldSeatsByFlightAndAircraftCode(int(currFlight.FlightId), currFlight.AircraftCode)
 	if err != nil {
-		return response.BookingResponse{}, err
+		return response.BookingResponse{}, errors.New("sold seat info failed: " + err.Error())
 	}
 
 	var totalPrice int64
@@ -139,6 +142,11 @@ func (b *BookingService) BookOneRace(data request.BookingOneRaceRequest) (respon
 		return response.BookingResponse{}, err
 	}
 
+	if !json.Valid([]byte(data.PassengerContact)) {
+		logrus.Error("invalid JSON")
+		data.PassengerContact = "{}"
+	}
+
 	ticket := models.Ticket{
 		TicketNo:      b.generateUniqueTicketNo(),
 		BookRef:       booking.BookRef,
@@ -148,18 +156,18 @@ func (b *BookingService) BookOneRace(data request.BookingOneRaceRequest) (respon
 	}
 
 	if err := b.ticketRepo.AddTicket(ticket); err != nil {
-		return response.BookingResponse{}, err
+		return response.BookingResponse{}, errors.New("failed on add ticket:" + err.Error())
 	}
 
 	ticketFlights := models.TicketFlights{
 		TicketNo:       ticket.TicketNo,
 		FlightId:       currFlight.FlightId,
 		FareConditions: data.FareCondition,
-		Amount:         totalPrice,
+		Amount:         float64(totalPrice),
 	}
 
 	if err := b.ticketFlightsRepo.AddTicketFlight(ticketFlights); err != nil {
-		return response.BookingResponse{}, err
+		return response.BookingResponse{}, errors.New("failed on add ticket flights:" + err.Error())
 	}
 
 	return response.BookingResponse{
@@ -209,7 +217,11 @@ func (b *BookingService) getFirstSeatByFlightAndFareCondition(aircraftCode strin
 		return "", err
 	}
 
-	blockedSeats, err := b.boardingPassRepo.FindBoardingPassesByFlightAndFareCondition(flightId, fareCondition)
+	blockedSeats, err := b.boardingPassRepo.FindBoardingPasses(flightId)
+	if err != nil {
+		return "", err
+	}
+
 	save := make(map[string]bool)
 	for _, seat := range blockedSeats {
 		save[seat.SeatNo] = true

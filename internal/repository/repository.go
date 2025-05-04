@@ -47,7 +47,7 @@ type ITicketRepository interface {
 }
 
 type ITicketFlightsRepository interface {
-	GetAllSoldSeatsByFlightAndAircraftCode(flightId, aircraftCode string) (models.FlightSeatInfo, error)
+	GetAllSoldSeatsByFlightAndAircraftCode(flightId int, aircraftCode string) (models.FlightSeatInfo, error)
 	AddTicketFlight(newTicketFlight models.TicketFlights) error
 	FindTicketFlight(ticketNo string) (models.TicketFlights, error)
 }
@@ -65,7 +65,7 @@ type IBoardingPassRepo interface {
 	FindLastBoardingNo(flightId int) (int, error)
 	AddBoardingPass(newBoardingPass models.BoardingPass) error
 	ExistsByFlightIdAndTicketNo(flightId int, ticketNo string) (int, error)
-	FindBoardingPassesByFlightAndFareCondition(flightId int, fareCondition string) ([]models.BoardingPass, error)
+	FindBoardingPasses(flightId int) ([]models.BoardingPass, error)
 }
 
 type Respository struct {

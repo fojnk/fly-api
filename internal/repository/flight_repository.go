@@ -21,6 +21,6 @@ func (f *FlightRepo) GetFlightByFlightId(flightId int) (models.Flight, error) {
 	var flight models.Flight
 	query := fmt.Sprintf(`SELECT * from %s f WHERE f.flight_id = $1`, flightsTable)
 
-	err := f.db.Get(&flight, query, flight)
+	err := f.db.Get(&flight, query, flightId)
 	return flight, err
 }

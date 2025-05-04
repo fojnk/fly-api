@@ -27,6 +27,6 @@ FROM
 JOIN
   ticket_flights tf ON f.flight_id = tf.flight_id
 WHERE
-  f.status = 'Scheduled'
+  f.status <> 'Scheduled'
 GROUP BY
   f.flight_id, tf.fare_conditions;

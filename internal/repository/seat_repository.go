@@ -33,7 +33,7 @@ func (p *SeatRepo) GetSeatsByAircraftCode(aircraftCode string) (models.AircraftS
 func (p *SeatRepo) FindSeatAmountByAircraftCodeAndFareCondition(aircraftCode, fareConditions string) (models.AircraftSeatsByFareCondition, error) {
 	var info models.AircraftSeatsByFareCondition
 
-	query := fmt.Sprintf(`SELECT s.aircraft_code, SUM(CASE WHEN s.fare_conditions = $1 THEN 1 ELSE 0 END) as amount FROM %s s WHERE s.aircraft_code = $2`, seatsTable)
+	query := fmt.Sprintf(`SELECT aircraft_code, SUM(CASE WHEN s.fare_conditions = $1 THEN 1 ELSE 0 END) as amount FROM %s s WHERE s.aircraft_code = $2 group by s.aircraft_code`, seatsTable)
 
 	err := p.db.Get(&info, query, fareConditions, aircraftCode)
 	return info, err
@@ -42,8 +42,8 @@ func (p *SeatRepo) FindSeatAmountByAircraftCodeAndFareCondition(aircraftCode, fa
 func (p *SeatRepo) FindSeatsByAircraftCodeAndFareCondition(aircraftCode, fareConditions string) ([]models.Seat, error) {
 	var info []models.Seat
 
-	query := fmt.Sprintf(`SELECT * FROM %s s WHERE s.aircraft_code = $1 AND s.fare_condition = $2`, seatsTable)
+	query := fmt.Sprintf(`SELECT * FROM %s s WHERE s.aircraft_code = $1 AND s.fare_conditions = $2`, seatsTable)
 
-	err := p.db.Select(&info, query, fareConditions, aircraftCode, fareConditions)
+	err := p.db.Select(&info, query, aircraftCode, fareConditions)
 	return info, err
 }
