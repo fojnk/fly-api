@@ -28,9 +28,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		api.GET("airports/:city", h.AirportByCity)
 		api.GET("inbound-schedule/:airport", h.InboundSchedule)
 		api.GET("outbound-schedule/:airport", h.OutboundSchedule)
-		api.GET("routes/", h.AllRoutes)
+		api.GET("routes", h.AllRoutes)
 		api.POST("book", h.Book)
-		api.POST("checkIn", h.CheckIn)
+		api.POST("check-in", h.CheckIn)
 	}
 
 	return router

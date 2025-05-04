@@ -18,6 +18,7 @@ type BookingService struct {
 	ticketFlightsRepo repository.ITicketFlightsRepository
 	bookingRepo       repository.IBookingRepo
 	ticketRepo        repository.ITicketRepository
+	boardingPassRepo  repository.IBoardingPassRepo
 }
 
 func NewBookingService(
@@ -26,7 +27,8 @@ func NewBookingService(
 	seatRepo repository.ISeatRepository,
 	ticketFlightsRepo repository.ITicketFlightsRepository,
 	bookingRepo repository.IBookingRepo,
-	ticketRepo repository.ITicketRepository) *BookingService {
+	ticketRepo repository.ITicketRepository,
+	boardingPassRepo repository.IBoardingPassRepo) *BookingService {
 
 	return &BookingService{
 		airRepo:           airRepo,
@@ -35,7 +37,39 @@ func NewBookingService(
 		ticketFlightsRepo: ticketFlightsRepo,
 		bookingRepo:       bookingRepo,
 		ticketRepo:        ticketRepo,
+		boardingPassRepo:  boardingPassRepo,
 	}
+}
+
+func (b *BookingService) CheckIn(data request.CheckInRequest) error {
+	_, err := b.ticketRepo.FindTicketByTicketNo(data.TicketNo)
+	if err != nil {
+		return err
+	}
+
+	if _, err = b.flightRepo.GetFlightByFlightId(int(data.FlightId)); err != nil {
+		return err
+	}
+
+	if _, err = b.boardingPassRepo.ExistsByFlightIdAndTicketNo(int(data.FlightId), data.TicketNo); err == nil {
+		return errors.New(`passenger already checked in`)
+	}
+
+	lastNo, err := b.boardingPassRepo.FindLastBoardingNo(int(data.FlightId))
+	if err != nil {
+		lastNo = 1
+	}
+	lastNo += 1
+
+	newBoardingPass := models.BoardingPass{
+		BoardingNo: int64(lastNo),
+		FlightId:   data.FlightId,
+		TicketNo:   data.TicketNo,
+		SeatNo:     "10b",
+	}
+
+	err = b.boardingPassRepo.AddBoardingPass(newBoardingPass)
+	return err
 }
 
 func (b *BookingService) CreateBooking(data request.BookingRaceRequest) ([]response.BookingResponse, error) {

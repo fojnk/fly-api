@@ -7,13 +7,14 @@ import (
 )
 
 const (
-	flightsTable       = "flights"
-	airportDataTable   = "airports_data"
-	routeTable         = "routes"
-	seatsTable         = "seats"
-	ticketTable        = "tickets"
-	ticketFlightsTable = "ticket_flights"
-	BookingTable       = "bookings"
+	flightsTable        = "flights"
+	airportDataTable    = "airports_data"
+	routeTable          = "routes"
+	seatsTable          = "seats"
+	ticketTable         = "tickets"
+	ticketFlightsTable  = "ticket_flights"
+	BookingTable        = "bookings"
+	BoardingPassesTable = "boarding_passes"
 )
 
 type IAirRepository interface {
@@ -58,6 +59,12 @@ type IBookingRepo interface {
 	AddBooking(newBooking models.Booking) error
 }
 
+type IBoardingPassRepo interface {
+	FindLastBoardingNo(flightId int) (int, error)
+	AddBoardingPass(newBoardingPass models.BoardingPass) error
+	ExistsByFlightIdAndTicketNo(flightId int, ticketNo string) (int, error)
+}
+
 type Respository struct {
 	IAirRepository
 	IScheduleRepository
@@ -67,6 +74,7 @@ type Respository struct {
 	ITicketRepository
 	IFlightRepository
 	IBookingRepo
+	IBoardingPassRepo
 }
 
 func NewRepository(db *sqlx.DB) *Respository {
@@ -79,5 +87,6 @@ func NewRepository(db *sqlx.DB) *Respository {
 		ISeatRepository:          NewSeatRepo(db),
 		IFlightRepository:        NewFlightRepo(db),
 		IBookingRepo:             NewBookingRepo(db),
+		IBoardingPassRepo:        NewBoardingPassesRepo(db),
 	}
 }
