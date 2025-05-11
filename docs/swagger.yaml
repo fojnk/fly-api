@@ -37,6 +37,12 @@ paths:
     get:
       description: get all aiports
       operationId: get-aiports
+      parameters:
+      - description: Language
+        in: query
+        name: lang
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -219,6 +225,16 @@ paths:
         name: airport
         required: true
         type: string
+      - description: Offset
+        in: query
+        name: offset
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -250,6 +266,16 @@ paths:
       description: get all outbound flights
       operationId: get-outbound-flights
       parameters:
+      - description: Offset
+        in: query
+        name: offset
+        required: true
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        required: true
+        type: string
       - description: Airport
         in: path
         name: airport

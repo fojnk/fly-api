@@ -23,7 +23,7 @@ type InboundSchedule struct {
 	Origin    string  `db:"origin" json:"origin"`
 }
 
-func (s *ScheduleRepo) GetInboundScheduleForAirport(airport, time string) ([]InboundSchedule, error) {
+func (s *ScheduleRepo) GetInboundScheduleForAirport(airport string, time string, offset int, limit int) ([]InboundSchedule, error) {
 	var schedules []InboundSchedule
 
 	query := fmt.Sprintf(`
@@ -38,10 +38,11 @@ func (s *ScheduleRepo) GetInboundScheduleForAirport(airport, time string) ([]Inb
 		f.arrival_airport = $1
 		AND f.scheduled_arrival >= $2
 	ORDER BY
-		f.scheduled_arrival;
+		f.scheduled_arrival
+	OFFSET $3 LIMIT $4;
 	`, flightsTable)
 
-	if err := s.db.Select(&schedules, query, airport, time); err != nil {
+	if err := s.db.Select(&schedules, query, airport, time, offset, limit); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +56,7 @@ type OutboundSchedule struct {
 	Origin    string  `db:"destination" json:"destination"`
 }
 
-func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string, time string) ([]OutboundSchedule, error) {
+func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string, time string, offset int, limit int) ([]OutboundSchedule, error) {
 	var schedules []OutboundSchedule
 
 	query := fmt.Sprintf(`
@@ -70,10 +71,11 @@ func (s *ScheduleRepo) GetOutboundScheduleForAirport(airport string, time string
             f.departure_airport = $1
             AND f.scheduled_departure >= $2
         ORDER BY
-            f.scheduled_departure;
+            f.scheduled_departure
+		LIMIT $3 OFFSET $4;
 	`, flightsTable)
 
-	if err := s.db.Select(&schedules, query, airport, time); err != nil {
+	if err := s.db.Select(&schedules, query, airport, time, limit, offset); err != nil {
 		return nil, err
 	}
 

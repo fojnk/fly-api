@@ -26,6 +26,15 @@ const docTemplate = `{
                 ],
                 "summary": "Get all airports",
                 "operationId": "get-aiports",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Language",
+                        "name": "lang",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -298,6 +307,20 @@ const docTemplate = `{
                         "name": "airport",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -346,6 +369,20 @@ const docTemplate = `{
                 "summary": "Get outbound flights by airport",
                 "operationId": "get-outbound-flights",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Airport",

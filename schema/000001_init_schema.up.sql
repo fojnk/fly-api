@@ -21,7 +21,7 @@ SELECT
   tf.fare_conditions,
   MIN(tf.amount) AS min_price,
   MAX(tf.amount) AS max_price,
-  AVG(tf.amount) AS avg_price,
+  AVG(tf.amount) AS avg_price
 FROM
   flights f
 JOIN

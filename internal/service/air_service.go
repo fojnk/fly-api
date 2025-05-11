@@ -23,8 +23,8 @@ func (a *AirService) IsOriginExists(origin string) bool {
 	return a.airRepo.IsOriginExists(origin)
 }
 
-func (a *AirService) GetAllAirports() (repository.Airports, error) {
-	return a.airRepo.GetAllSrcAndDestAirports()
+func (a *AirService) GetAllAirports(lang string) (repository.Airports, error) {
+	return a.airRepo.GetAllSrcAndDestAirports(lang)
 }
 
 func (a *AirService) GetAirportsByCity(cityName string) ([]models.Airport, error) {

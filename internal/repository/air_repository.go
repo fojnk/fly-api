@@ -44,26 +44,26 @@ type Airports struct {
 	DestAirports []models.Airport
 }
 
-func (a *AirRepo) GetAllSrcAndDestAirports() (Airports, error) {
+func (a *AirRepo) GetAllSrcAndDestAirports(lang string) (Airports, error) {
 	var airports Airports
 
 	query1 := fmt.Sprintf(`
-		SELECT DISTINCT airport_code, airport_name, 
-			city, coordinates, timezone
+		SELECT DISTINCT airport_code, airport_name ->> $1 as airport_name, 
+			city ->> $1 as city, coordinates, timezone
 		FROM %s r left join %s a
 		ON r.departure_airport = a.airport_code`, routeTable, airportDataTable)
 
-	if err := a.db.Select(&airports.SrcAirports, query1); err != nil {
+	if err := a.db.Select(&airports.SrcAirports, query1, lang); err != nil {
 		return Airports{}, err
 	}
 
 	query2 := fmt.Sprintf(`
-		SELECT DISTINCT airport_code, airport_name, 
-			city, coordinates, timezone
+		SELECT DISTINCT airport_code, airport_name ->> $1 as airport_name, 
+			city ->> $1 as city, coordinates, timezone
 		FROM %s r left join %s a
 		ON r.arrival_airport = a.airport_code`, routeTable, airportDataTable)
 
-	if err := a.db.Select(&airports.DestAirports, query2); err != nil {
+	if err := a.db.Select(&airports.DestAirports, query2, lang); err != nil {
 		return Airports{}, err
 	}
 

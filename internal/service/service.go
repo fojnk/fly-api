@@ -9,14 +9,14 @@ import (
 
 type IAirService interface {
 	GetAllCities() (repository.Cities, error)
-	GetAllAirports() (repository.Airports, error)
+	GetAllAirports(lang string) (repository.Airports, error)
 	GetAirportsByCity(cityName string) ([]models.Airport, error)
 	IsOriginExists(origin string) bool
 }
 
 type IScheduleService interface {
-	GetInboundSchedule(airport string, time string) ([]repository.InboundSchedule, error)
-	GetOutboundSchedule(airport string, time string) ([]repository.OutboundSchedule, error)
+	GetInboundSchedule(airport string, time string, offset int, limit int) ([]repository.InboundSchedule, error)
+	GetOutboundSchedule(airport string, time string, offset int, limit int) ([]repository.OutboundSchedule, error)
 }
 
 type IRouteService interface {

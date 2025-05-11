@@ -36,13 +36,15 @@ func (h *Handler) AllCities(c *gin.Context) {
 // @Description get all aiports
 // @ID get-aiports
 // @Produce  json
+// @Param lang query string true "Language"
 // @Success 200 {integer} integer 1
 // @Failure 400,404 {object} transort_error
 // @Failure 500 {object} transort_error
 // @Failure default {object} transort_error
 // @Router /api/airports [get]
 func (h *Handler) AllAirports(c *gin.Context) {
-	airports, err := h.services.IAirService.GetAllAirports()
+	lang := c.Query("lang")
+	airports, err := h.services.IAirService.GetAllAirports(lang)
 
 	if err != nil {
 		NewTransportErrorResponse(c, http.StatusInternalServerError, err.Error())

@@ -19,15 +19,15 @@ const (
 
 type IAirRepository interface {
 	GetAllSrcAndDestCities() (Cities, error)
-	GetAllSrcAndDestAirports() (Airports, error)
+	GetAllSrcAndDestAirports(lang string) (Airports, error)
 	GetAirportsInCity(cityName string) ([]models.Airport, error)
 	GetAirportByNameOrCode(airportName string) (models.Airport, error)
 	IsOriginExists(origin string) bool
 }
 
 type IScheduleRepository interface {
-	GetInboundScheduleForAirport(airport string, time string) ([]InboundSchedule, error)
-	GetOutboundScheduleForAirport(airport string, time string) ([]OutboundSchedule, error)
+	GetInboundScheduleForAirport(airport string, time string, offset int, limit int) ([]InboundSchedule, error)
+	GetOutboundScheduleForAirport(airport string, time string, offset int, limit int) ([]OutboundSchedule, error)
 }
 
 type IRouteRepository interface {
